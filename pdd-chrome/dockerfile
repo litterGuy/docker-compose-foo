@@ -1,0 +1,19 @@
+#编译
+FROM golang:1.11.13 as build
+WORKDIR	/go/src/
+RUN apt-get update && apt-get install -y git
+RUN git clone http://changli:745689249wang@192.168.0.167/changli/pdd-chrome.git
+
+WORKDIR	/go/src/pdd-chrome
+
+ENV GOPATH /go/
+ENV PATH $PATH:$GOPATH/bin
+RUN go get github.com/beego/bee && go get -u github.com/kardianos/govendor && export PATH="$GOPATH/bin:$PATH"
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOARM=6 bee pack
+RUN tar zxvf pdd-chrome.tar.gz
+#运行
+FROM scratch as run
+COPY --from=build /go/src/pdd-chrome/pdd-chrome/ /home/app/pdd-chrome/
+WORKDIR	/home/app/pdd-chrome/
+EXPOSE 8080
+ENTRYPOINT ["./pdd-chrome"]

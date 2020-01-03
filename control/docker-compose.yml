@@ -1,0 +1,37 @@
+version: "3"
+services:
+    db:
+        image: mysql
+        ports:
+            - 3306:3306
+        restart: always    
+        environment:
+            MYSQL_ROOT_PASSWORD: 123456
+            MYSQL_DATABASE: control
+            MYSQL_ROOT_HOST: '%'
+        networks:
+            - backend
+        volumes:
+            - "./init:/docker-entrypoint-initdb.d/"
+    redis:
+        image: redis:alpine
+        restart: always
+        networks:
+            - backend
+    control:
+        build: .
+        ports:
+            - 8080:8080
+        depends_on:
+            - db
+            - redis
+        networks:
+            - backend
+        restart: always    
+        environment:
+            SPRING_DATASOURCE_URL:  jdbc:mysql://db:3306/control?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+            SPRING_DATASOURCE_USERNAME: root
+            SPRING_DATASOURCE_PASSWORD: 123456
+            SPRING_REDIS_HOST:  redis
+networks:
+    backend:

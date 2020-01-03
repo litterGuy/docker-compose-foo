@@ -1,0 +1,16 @@
+
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/fk?useUnicode=true&characterEncoding=UTF-8&serverTimezone=UTC
+    username: root
+    password: 123456
+
+  redis:
+    database: 0
+    password:
+    host: 127.0.0.1
+    port: 6379
+
+logger:
+  level: info
+  path: .

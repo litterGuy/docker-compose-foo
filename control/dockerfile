@@ -1,0 +1,4 @@
+FROM openjdk:8-jdk-alpine
+COPY control-0.0.1-SNAPSHOT.jar /home/control/control.jar
+WORKDIR	/home/control/
+ENTRYPOINT ["java","-jar","control.jar"]
