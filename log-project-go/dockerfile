@@ -1,11 +1,18 @@
-FROM golang:1.12 as build
-
-# 设置代理 TODO 9885地址在代理时无法下载，等待解决
-ENV GOPROXY https://goproxy.io
-ENV GO111MODULE on
+FROM golang:1.13.5 as build
 
 #设置路径
 WORKDIR /go/cache
+
+# 设置代理
+ENV GO111MODULE on
+RUN echo "192.168.0.165 git.9885.net" >> /etc/hosts
+
+RUN go env -w GOPROXY=https://goproxy.io
+RUN go env -w GOPRIVATE=git.9885.net
+RUN go env -w GOSUMDB=off
+RUN go get -v git.9885.net/lib/go/logxs
+
+
 ADD go.mod .
 ADD go.sum .
 RUN go mod download
