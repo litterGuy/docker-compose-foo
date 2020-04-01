@@ -10,7 +10,6 @@ RUN echo "192.168.0.165 git.9885.net" >> /etc/hosts
 RUN go env -w GOPROXY=https://goproxy.io
 RUN go env -w GOPRIVATE=git.9885.net
 RUN go env -w GOSUMDB=off
-RUN go get -v git.9885.net/lib/go/logxs
 
 
 ADD go.mod .
