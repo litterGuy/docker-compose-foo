@@ -1,0 +1,22 @@
+FROM golang:1.12 as build
+
+# 设置代理 TODO 9885地址在代理时无法下载，等待解决
+ENV GOPROXY https://goproxy.io
+ENV GO111MODULE on
+
+#设置路径
+WORKDIR /go/cache
+ADD go.mod .
+ADD go.sum .
+RUN go mod download
+
+WORKDIR /go/release
+ADD . .
+RUN go mod tidy
+RUN GOOS=linux CGO_ENABLED=0 go build -ldflags="-s -w" -installsuffix cgo -o main
+
+FROM scratch as prod
+COPY --from=build /go/release /home/app/
+WORKDIR	/home/app/
+EXPOSE 9000
+ENTRYPOINT ["./main"]
