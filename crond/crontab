@@ -1,0 +1,1 @@
+* * * * * echo $(date +'%Y-%m-%d %H:%M:%S') hello crontab >>/var/www/html/cron.log
