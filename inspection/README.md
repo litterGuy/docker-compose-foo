@@ -127,7 +127,7 @@ docker-compose up -d
 
 ## 访问应用地址
 
-打开浏览器，输入：(http://localhost:80)，若能正确展示页面，则表明环境搭建成功。
+打开浏览器，输入：( http://localhost:80 )。若能正确展示页面，则表明环境搭建成功。
 
 > tips
 >
@@ -135,7 +135,7 @@ docker-compose up -d
 >
 > 停止服务的容器docker-compose stop inspection-mysql inspection-server inspection-nginx inspection-redis
 
-如果访问不同，请使用
+如果访问不通，请使用
 ```
 docker ps -a
 ```
