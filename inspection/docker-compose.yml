@@ -1,0 +1,75 @@
+version : '3'
+services:
+  inspection-mysql:
+    container_name: inspection-mysql
+    image: mysql:8.0.25
+    build:
+      context: .
+      dockerfile: mysql-dockerfile
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./mysql/conf:/etc/mysql/conf.d
+      - ./mysql/logs:/logs
+      - ./mysql/data:/var/lib/mysql
+    command: [
+          # 将mysql8.0默认密码策略 修改为 原先 策略 (mysql8.0对其默认策略做了更改 会导致密码无法匹配)
+          '--default-authentication-plugin=mysql_native_password',
+          '--innodb-buffer-pool-size=80M',
+          '--character-set-server=utf8mb4',
+          '--collation-server=utf8mb4_unicode_ci',
+          '--default-time-zone=+8:00',
+          '--lower-case-table-names=1'
+        ]
+    environment:
+      MYSQL_DATABASE: 'inspection'
+      MYSQL_ROOT_PASSWORD: inspection_123#
+      # 初始化用户(不能是root 会报错, 后续需要给新用户赋予权限)
+      MYSQL_USER: inspection
+      # 用户密码
+      MYSQL_PASSWORD: inspection_123#
+  inspection-redis:
+    container_name: inspection-redis
+    image: redis
+    build:
+      context: .
+      dockerfile: redis-dockerfile
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./conf/redis.conf:/home/inspection/redis/redis.conf
+      - ./redis/data:/data
+    command: redis-server /home/inspection/redis/redis.conf
+  inspection-nginx:
+    container_name: inspection-nginx
+    image: nginx
+    build:
+      context: .
+      dockerfile: nginx-dockerfile
+    ports:
+      - "80:80"
+    volumes:
+      - ./html/dist:/home/inspection/projects/inspection-ui
+      - ./conf/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/logs:/var/log/nginx
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - inspection-server
+    links:
+      - inspection-server
+  inspection-server:
+    container_name: inspection-server
+    build:
+      context: .
+      dockerfile: inspection-dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./inspection/logs:/home/inspection/logs
+      - ./inspection/uploadPath:/home/inspection/uploadPath
+    depends_on:
+      - inspection-mysql
+      - inspection-redis
+    links:
+      - inspection-mysql
+      - inspection-redis

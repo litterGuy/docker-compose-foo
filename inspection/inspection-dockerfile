@@ -1,0 +1,15 @@
+# 基础镜像
+FROM java:8
+# author
+MAINTAINER inspection
+
+# 挂载目录
+VOLUME /home/inspection
+# 创建目录
+RUN mkdir -p /home/inspection
+# 指定路径
+WORKDIR /home/inspection
+# 复制jar文件到路径
+COPY ./jar/*.jar /home/inspection/inspection-admin.jar
+# 启动应用
+ENTRYPOINT ["java","-jar","inspection-admin.jar"]
